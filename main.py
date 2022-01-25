@@ -1,10 +1,13 @@
 import plotly.express as px
-import plotly.express as px
 import pandas
 
 def get_data(name): # extracts points from file
     ### var ###
     o = open(name, "r")
+    # file names need to be data_feder.txt and data_gummi.txt, data must be formatted like the following:
+    # weight; delta_s
+    # weight; delta_s
+    # ...
     txt = o.read()
     o.close()
     ### /var ###
@@ -33,7 +36,6 @@ def fit_line(result): # linear fit
     for i in range(len(distance_f)):
         result["average increment Feder"][i] = result["average increment Feder"][i] + idistance_f
         result["average increment Gummi"][i] = result["average increment Gummi"][i] + idistance_g
-
     return result
 
 def calculate(): # main function
@@ -63,9 +65,11 @@ def calculate(): # main function
     for i in range(10): # accuracy of best fit line
         result = fit_line(result)
 
+    print(f"""increment Feder: {(result['average increment Feder'][-1]-result['average increment Feder'][0])/(result['gewicht'][-1]-result['gewicht'][0])}
+increment Gummi: {(result['average increment Gummi'][-1]-result['average increment Gummi'][0])/(result['gewicht'][-1]-result['gewicht'][0])}""")
     result = pandas.DataFrame(result)
 
-    fig = px.scatter({"gewicht": [], "strecke": []}, x="gewicht", y="strecke")
+    fig = px.scatter({"gewicht (g)": [], "strecke (mm)": []}, x="gewicht (g)", y="strecke (mm)")
     fig.add_scatter(x=result["gewicht"], y = result["feder_delta_s"], name = "Feder")
     fig.add_scatter(x=result["gewicht"], y = result["gummi_delta_s"], name = "Gummi")
     fig.add_scatter(x=result["gewicht"], y=result["average increment Gummi"], name="linear fit Gummi")
